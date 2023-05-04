@@ -61,7 +61,7 @@
 
         <Button
             android:id="@+id/btnSubmit"
-            android:layout_width="150dp"
+            android:layout_width="310dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"

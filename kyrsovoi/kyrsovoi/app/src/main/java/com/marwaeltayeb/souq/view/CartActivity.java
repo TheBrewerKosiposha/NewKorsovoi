@@ -63,6 +63,7 @@ public class CartActivity extends AppCompatActivity {
                     }
                     cartAdapter = new CartAdapter(getApplicationContext(), favoriteList, product -> {
                         Intent intent = new Intent(CartActivity.this, DetailsActivity.class);
+
                         // Pass an object of product class
                         intent.putExtra(PRODUCT, (product));
                         startActivity(intent);
@@ -78,4 +79,8 @@ public class CartActivity extends AppCompatActivity {
             binding.emptyCart.setText(getString(R.string.no_internet_connection));
         }
     }
+
+
+
+
 }

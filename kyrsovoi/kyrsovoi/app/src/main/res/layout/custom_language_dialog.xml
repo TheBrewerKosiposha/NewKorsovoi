@@ -50,7 +50,7 @@
             android:layout_gravity="center|end"
             android:layout_margin="5dp"
             android:padding="5dp"
-            android:text="@string/english"
+            android:text="@string/russian"
             android:background="@color/white"
             android:textAllCaps="false"
             android:textColor="@color/colorPrimary" />

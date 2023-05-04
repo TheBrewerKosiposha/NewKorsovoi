@@ -14,7 +14,7 @@ router.post("/add", (request, response) => {
     const phone = request.body.phone
     const userId = request.body.userId
     const productId = request.body.productId
-
+//процедура
     const query = "INSERT INTO Shipping(address, city ,country, zip,phone,user_id, product_id) VALUES(?,?,?,?,?,?,?)"
 
     const args = [address, city, country, zip, phone, userId, productId]
