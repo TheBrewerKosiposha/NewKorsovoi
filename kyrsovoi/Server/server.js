@@ -10,11 +10,7 @@ app.use('/storage_product', express.static('storage_product'));
 app.use('/storage_poster', express.static('storage_poster'));
 
 
-app.get("/", function(request, response){
-     
-    // отправляем ответ
-    response.send("<h2>Привет Express!</h2>");
-});
+
 
 // Import my file
 const userRouter = require('./api/routes/users')
@@ -27,7 +23,7 @@ const posterRouter = require('./api/routes/posters')
 const addressRouter = require('./api/routes/address')
 const orderRouter = require('./api/routes/orders')
 
-const port = 3000
+const port = 3001
 
 
 
@@ -47,6 +43,22 @@ app.use('/posters',posterRouter)
 app.use('/address',addressRouter)
 app.use('/orders',orderRouter)
 
+app.get('/', (req, res) => {
+    res.send(`
+        <h1>Главная страница</h1>
+        <ul>
+            <li><a href="/users">users</a></li>
+            <li><a href="/products/all">products</a></li>
+            <li><a href="/favorites">favorites</a></li>
+            <li><a href="/carts">carts</a></li>
+            <li><a href="/history">history</a></li>
+            <li><a href="/review">review</a></li>
+            <li><a href="/address">address</a></li>
+            <li><a href="/orders/allrouter">orders</a></li>
+        </ul>
+    `);
+});
+
 // Make my server work on port 3000 and listen when user use it
 app.listen(port, () => console.log("Server Started"))
-console.log("http://localhost:3000");
+console.log("http://localhost:3001");
