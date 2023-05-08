@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-
+const bodyParser = require("body-parser");
 // import file
 const database = require("../../config")
 
@@ -58,6 +58,110 @@ router.post("/add", (request, response) => {
     })
 });
 
+router.get("/allrouter", (request, response) => {
+    const query = "SELECT * FROM bd.ordering";
+    database.query(query, (error, result) => {
+      if (error) {
+        console.log(error);
+        response.sendStatus(500); // internal server error
+      } else {
+        let results = `
+        <form method="POST" action="/orders/addOrder">
+  <td><input type="text" name="orderNumber"></td>
+  <td><input type="date" name="orderDate"></td>
+  <td><input type="text" name="status"></td>
+  <td><input type="text" name="nameOnCard"></td>
+  <td><input type="text" name="cardNumber"></td>
+  <td><input type="date" name="expirationDate"></td>
+  <td><input type="number" name="userId"></td>
+  <td><input type="number" name="productId"></td>
+  <td>
+    <button type="submit" name="addOrder">Add Order</button>
+  </td>
+</form>
+          <table>
+            <thead>
+              <tr>
+                <th>Ordering ID</th>
+                <th>Order Number</th>
+                <th>Order Date</th>
+                <th>Status</th>
+                <th>Name on Card</th>
+                <th>Card Number</th>
+                <th>Expiration Date</th>
+                <th>User ID</th>
+                <th>Product ID</th>
+                <th>Delete</th> // добавляем новый столбец для кнопок
+              </tr>
+            </thead>
+            <tbody>`;
+        result.forEach((order) => {
+          results += `
+            <tr>
+              <td>${order.ordering_id}</td>
+              <td>${order.order_number}</td>
+              <td>${order.order_date}</td>
+              <td>${order.status}</td>
+              <td>${order.name_on_card}</td>
+              <td>${order.card_number}</td>
+              <td>${order.expiration_date}</td>
+              <td>${order.user_id}</td>
+              <td>${order.product_id}</td>
+              <td>
+              <form method="POST" action="/orders/deleteOrder" >
+                  <button type="submit" name="orderId" value="${order.ordering_id}">Delete</button> 
+                </form>
+              </td>
+            </tr>`;
+        });
+        results += `
+            </tbody>
+          </table>`;
+      
+        response.send(results);
+      }
+    });
+  });
+  
+  router.post("/deleteOrder", bodyParser.urlencoded({ extended: false }), (request, response) => {
+    const orderId = request.body.orderId; // fix: should be request.body.orderId instead of request.body.ordering_id
+    const query = `DELETE FROM bd.ordering WHERE ordering_id = '${orderId}'`;
+    database.query(query, (error, result) => {
+      if (error) {
+        console.log(error);
+        response.sendStatus(500); // internal server error
+      } else {
+        console.log(`Order with ID ${orderId} deleted`);
+        response.redirect("/orders/allrouter"); // перенаправляем на страницу, где отображаются все заказы
+      }
+    });
+  });
+
+  router.post("/addOrder", (request, response) => {
+    const {
+      orderNumber,
+      orderDate,
+      status,
+      nameOnCard,
+      cardNumber,
+      expirationDate,
+      userId,
+      productId
+    } = request.body;
+  
+    const query = `INSERT INTO bd.ordering (order_number, order_date, status, name_on_card, card_number, expiration_date, user_id, product_id) VALUES ('${orderNumber}', '${orderDate}', '${status}', '${nameOnCard}', '${cardNumber}', '${expirationDate}', '${userId}', '${productId}');`;
+  
+    database.query(query, (error, result) => {
+      if (error) {
+        console.log(error);
+        response.sendStatus(500); // internal server error
+      } else {
+        console.log('New order added to the database:', result);
+        response.redirect("/orders/allrouter");
+      }
+    });
+  });
+
 
 router.get("/", (request, response) => {
     const productId = request.body.id
@@ -94,6 +198,8 @@ router.get("/", (request, response) => {
         return Math.floor(Math.random() * (max - min)) + min; 
     }
 });
+
+
 
 
 // Get Orders

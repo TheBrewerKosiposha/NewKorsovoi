@@ -33,36 +33,73 @@ const uploadImage = multer({
 // import file
 const database = require("../../config")
 
+
 // Get All users
 router.get("/", (request, response) => {
     var page = request.query.page;
     var page_size = request.query.page_size;
-
+  
     console.log(typeof page);
-
-    if(page == null){
+  
+    if(page == null) {
         page = 0;
-     }
- 
-     if(page_size == null){
+    }
+  
+    if(page_size == null){
         page_size = 25;
-     }
-
-     const args = [
+    }
+  
+    const args = [
         parseInt(page_size),
         parseInt(page)
     ];
-
+  
     const query = "SELECT * FROM user LIMIT ? OFFSET ?"
     database.query(query, args, (error, result) => {
-        if(error) throw error;
-        response.status(200).json({
-            "error" : false,
-            "users" : result
-        })
+        if(error){
+            throw error;
+        } else{
+            const users = result;
+            const prevPage = page > 0 ? parseInt(page) - 1 : 0;
+            const nextPage = parseInt(page) + 1;
+            response.status(200).send(`
+            <li><a href="/">В главное</a></li>
+            <li><a href="/users/register">Создать нового пользователя</a></li>
+                <h1>Пользователи:</h1>
+                <ul>
+                    ${users.map(user => `
+                    <li>${user.name} (${user.email}) 
+                      <form id="delete-form-${user.id}" action="/users/${user.id}" method="post">
+                          <button type="button" onclick="deleteUser(${user.id})">delete</button>
+                      </form>
+                    </li>`).join('')}                
+                </ul>
+                <br>
+                <a href="/users?page=${prevPage}&page_size=${page_size}">Предыдущая страница</a>
+                <a href="/users?page=${nextPage}&page_size=${page_size}">Следующая страница</a>
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script>
+                function deleteUser(id) {
+                    $.ajax({
+                        url:"/users/:${users.id}",
+                        method: "DELETE",
+                        success: function(res) {
+                            $("#delete-form-" + id).remove(); // удаляем форму из DOM
+                            alert(res);
+                        },
+                        error: function(err) {
+                            alert("Ошибка: " + err);
+                        }
+                    });
+                }
+            </script>
+            `);
+        }
+    });
+  });
 
-    })
-});
+
+
 
 // Login
 router.get("/login", (request, response) => {
@@ -70,6 +107,7 @@ router.get("/login", (request, response) => {
     const password = request.query.password
     const query = "SELECT id, password, name, email, if(isAdmin=1,  'true', 'false') as isAdmin FROM user WHERE email = ?";
     const args = [email]
+    
     database.query(query, args, (error, result) => {
         if(error) throw error
         if(result.length == 1){
@@ -79,7 +117,7 @@ router.get("/login", (request, response) => {
                 if(isSame){
                     // Return Token
                
-                    //jwt.sign(email, process.env.JWT_KEY, (err, token) => {
+              //      jwt.sign(email, process.env.JWT_KEY, (err, token) => {
                         if (err) throw err;
                         response.status(200).json({
                            "id" : result[0]["id"],
@@ -90,7 +128,7 @@ router.get("/login", (request, response) => {
                            "message" : "Successful Login",
                            "password": password,
                         });
-                    //});
+             //       });
                 }else{
                     response.status(500).send("Invalid Password")
                 }
@@ -103,10 +141,34 @@ router.get("/login", (request, response) => {
     });
 });
 
+
+router.get('/register', (req, res) => {
+    res.send(`
+    <form method="POST" action="/users/register" enctype="multipart/form-data">
+      <label>Name:</label>
+      <input type="text" name="name"><br><br>
+      <label>Email:</label>
+      <input type="text" name="email"><br><br>
+      <label>Password:</label>
+      <input type="password" name="password"><br><br>
+      <label>Age:</label>
+      <input type="number" name="age"><br><br>
+      <label for="gender">Gender:</label>
+      <select name="gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select><br><br>
+      <label for="image">Profile Image:</label>
+      <input type="file" name="image"><br><br>
+      <button type="submit"  >Register</button>
+    </form>
+  `);
+    });
 // Insert User
 router.post("/register",uploadImage.single('image'), (request, response) => {
     const name = request.body.name
-    const email = request.body.email
+    const email = request.body.email 
     const password = request.body.password
     var gender = request.body.gender
     var age = request.body.age
@@ -161,6 +223,7 @@ router.post("/register",uploadImage.single('image'), (request, response) => {
                    database.query(userQuery, result.insertId, (err, res) => {
                        if (error) throw error
                        response.status(200).json({
+                        
                            "error" : false,
                            "message" : "Register Done",
                            "user" : res[0],

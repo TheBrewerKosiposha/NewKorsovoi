@@ -27,40 +27,128 @@ const uploadImage = multer({
 const database = require("../../config")
 const checkAuth = require('../../middleware/check_auth');
 
-
-// Get All products
 router.get("/all", (request, response) => {
-    var page = request.query.page;
-    var page_size = request.query.page_size;
+  var page = request.query.page;
+  var page_size = request.query.page_size;
 
-    if(page == null || page < 1){
-        page = 1;
-    }
- 
-    if(page_size == null){
-        page_size = 20;
-    }
+  if (page == null || page < 1) {
+    page = 1;
+  }
 
-    // OFFSET starts from zero
-    page = page - 1;
-    // OFFSET * LIMIT
-    page = page * page_size;
+  if (page_size == null) {
+    page_size = 20;
+  }
 
-    const args = [
-        parseInt(page_size),
-        parseInt(page)
-    ];
-    
-    const query = "SELECT * FROM product LIMIT ? OFFSET ?"
-    database.query(query,args, (error, result) => {
-        if(error) throw error;
-        response.status(200).json({
-            "page": page + 1,
-            "error" : false,
-            "products" : result
-        })
-    })
+  // OFFSET starts from zero
+  page = page - 1;
+  // OFFSET * LIMIT
+  page = page * page_size;
+
+  const args = [parseInt(page_size), parseInt(page)];
+
+  const query = "SELECT * FROM product LIMIT ? OFFSET ?";
+  database.query(query, args, (error, result) => {
+    if (error) throw error;
+
+      let tableRows = "";
+      result.forEach((product) => {
+        tableRows += `
+          <tr>
+            <td>${product.id}</td>
+            <td>${product.product_name}</td>
+            <td>${product.quantity}</td>
+            <td>${product.category}</td>
+            <td>${product.price}</td>
+            <td>
+              <form method="POST" action="/products/deletes/${product.id}" >
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        `;
+      });
+
+      const html = `
+        <html>
+          <head>
+            <title>All Products</title>
+            <style>
+              table {
+                border-collapse: collapse;
+                width: 100%;
+              }
+              th, td {
+                padding: 8px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+              }
+              th {
+                background-color: #f2f2f2;
+              }
+            </style>
+          </head>
+          <body>
+          <form action="/products/addnew" method="POST">
+          <input type="text" name="productName" placeholder="Название продукта"/>
+          <input type="text" name="productPrice" placeholder="Цена продукта"/>
+          <input type="text" name="productQuantity" placeholder="Количество продукта"/>  
+          <input type="text" name="productSupplier" placeholder="Поставщик продукта"/>
+          <input type="text" name="productCategory" placeholder="Категория продукта"/>
+          <input type="text" name="productImage" placeholder="Изображение продукта"/>
+          <button type="submit">Добавить продукт</button>
+        </form>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Имя</th>
+                  <th>Количество</th>
+                  <th>Категория</th>
+                  <th>Цена</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRows}
+              </tbody>
+            </table>
+           
+          </body>
+        </html>
+      `;
+
+      response.status(200).send(html);
+  });
 });
+
+router.post("/deletes/:id", (request, response) => {
+  const productId = request.params.id;
+
+  const query = "DELETE FROM product WHERE id = ?";
+
+  database.query(query, [productId], (error, result) => {
+    if (error) throw error;
+    response.send("Product deleted successfully.");
+  });
+});
+
+router.post("/addnew", (request, response) => {
+  const productName = request.body.productName;
+  const productPrice = request.body.productPrice;
+  const productQuantity = request.body.productQuantity;
+  const productSupplier = request.body.productSupplier;
+  const productCategory = request.body.productCategory;
+  const productImage = request.body.productImage;
+
+  const values = [productName, productPrice, productQuantity, productSupplier, productCategory, productImage];
+  const query = "INSERT INTO product(product_name, price, quantity, supplier, category, image) VALUES(?, ?, ?, ?, ?,?)"
+  database.query(query, values, (error, result) =>{
+    if (error) throw error;
+    response.redirect("/products/all");
+  });
+});
+
+
+
 
 // Get products by category
 router.get("/", (request, response) => {
@@ -173,28 +261,56 @@ router.get("/search", (request, response) => {
 }); 
 
 // Insert Product
-router.post("/insert", checkAuth, uploadImage.single('image'), (request, response) => {
-    const name = request.body.name
-    const price = request.body.price
-    const quantity = request.body.quantity
-    const supplier = request.body.supplier
-    const category = request.body.category
-    
-    const file = request.file;
-    var filePath = ""
-    if(file != null){
-        filePath = file.path
-    }
-   
-    const query = "INSERT INTO product(product_name, price, quantity, supplier, category, image) VALUES(?, ?, ?, ?, ?,?)"
-        
-    const args = [name, price, quantity, supplier, category, filePath]
 
-        database.query(query, args, (error, result) => {
-            if (error) throw error
-            response.status(200).send("Product Inserted")
-        });
-});
+router.get('/insert', (req, res) => {
+  res.send(`
+  <form method="POST" action="/products/insert" enctype="multipart/form-data">
+    <label>Id:</label>
+    <input type="number" name="id"><br><br>
+    <label>Name:</label>
+    <input type="text" name="name"><br><br>
+    <label>Price:</label>
+    <input type="number" name="price"><br><br>
+    <label>Quantity:</label>
+    <input type="number" name="quantity"><br><br>
+    <label>Supplier:</label>
+    <input type="text" name="supplier"><br><br>
+    <label for="text">Category:</label>
+    <select name="category">
+      <option value="measuring">measuring</option>
+      <option value="metalCutting">metalCutting</option>
+      <option value="woodworking">woodworking</option>
+      <option value="household">household</option>
+    </select><br><br>
+    <label for="text">Profile Image:</label>
+    <input type="file" name="image"><br><br>
+    <button type="submit"  >Add</button>
+  </form>
+`);
+}); 
+
+router.post("/insert", checkAuth, uploadImage.single('image'), (request, response) => {
+  const name = request.body.name
+  const price = request.body.price
+  const quantity = request.body.quantity
+  const supplier = request.body.supplier
+  const category = request.body.category
+  
+  const file = request.file;
+  var filePath = ""
+  if(file != null){
+      filePath = file.path
+  }
+ 
+  const query = "INSERT INTO product(product_name, price, quantity, supplier, category, image) VALUES(?, ?, ?, ?, ?,?)"
+      
+  const args = [name, price, quantity, supplier, category, filePath]
+
+      database.query(query, args, (error, result) => {
+          if (error) throw error
+          response.status(200).send("Product Inserted")
+      });
+}); 
 
 // Delete Product
 router.delete("/:id", (request, response) => {
