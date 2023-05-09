@@ -33,7 +33,7 @@
     <string name="share_product">Поделиться продуктом</string>
     <string name="add_to_cart">Добавить в корзину</string>
     <string name="add_to_favourite">Добавить в избранное</string>
-    <string name="_5399_egp">5399 EGP</string>
+    <string name="_5399_egp">5399 PLN</string>
     <string name="name_required">Требуемое имя</string>
     <string name="all_laptops">Все сетевые электроинструменты</string>
     <string name="all_mobiles">Электроинструмент, работающий на батарейках</string>
@@ -102,7 +102,7 @@
     <string name="write_review">Написать отзыв</string>
     <string name="dateOfReview">7 Апреля 2023</string>
     <string name="write_your_feedback_here">Напишите Свой отзыв здесь</string>
-    <string name="submit">Под</string>
+    <string name="submit">Подтвердить</string>
     <string name="dummyRate">3.0/5</string>
     <string name="highestNumber">/5</string>
     <string name="change_password">Поменять пароль</string>
