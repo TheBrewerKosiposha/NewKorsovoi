@@ -23,7 +23,7 @@ const posterRouter = require('./api/routes/posters')
 const addressRouter = require('./api/routes/address')
 const orderRouter = require('./api/routes/orders')
 
-const port = 3001
+const port = 3000
 
 
 
@@ -49,11 +49,6 @@ app.get('/', (req, res) => {
         <ul>
             <li><a href="/users">users</a></li>
             <li><a href="/products/all">products</a></li>
-            <li><a href="/favorites">favorites</a></li>
-            <li><a href="/carts">carts</a></li>
-            <li><a href="/history">history</a></li>
-            <li><a href="/review">review</a></li>
-            <li><a href="/address">address</a></li>
             <li><a href="/orders/allrouter">orders</a></li>
         </ul>
     `);
@@ -61,4 +56,4 @@ app.get('/', (req, res) => {
 
 // Make my server work on port 3000 and listen when user use it
 app.listen(port, () => console.log("Server Started"))
-console.log("http://localhost:3001");
+console.log("http://localhost:"+port);

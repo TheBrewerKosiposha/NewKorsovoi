@@ -64,6 +64,24 @@ router.get("/all", (request, response) => {
                 <button type="submit">Delete</button>
               </form>
             </td>
+            <td>
+              <form method="POST" action="/products/update/${product.id}" >
+                <input type="text" name="productName" placeholder="Product Name" value="${product.product_name}"/>
+                <input type="text" name="productPrice" placeholder="Product Price" value="${product.price}"/>
+                <input type="text" name="productQuantity" placeholder="Product Quantity" value="${product.quantity}"/>
+                <input type="text" name="productSupplier" placeholder="Product Supplier" value="${product.supplier}"/>
+                <label for="productCategory"> ${product.category}</label>
+                <select name="productCategory" >
+                  <option value="woodworking">woodworking</option>
+                  <option value="metalCutting">metalCutting</option>
+                  <option value="measuring">measuring</option>
+                  <option value="household">household</option>
+                </select><br><br>
+
+                <input type="text" name="productImage" placeholder="Product Image" value="${product.image}"/>
+                <button type="submit">Update</button>
+              </form>
+            </td>
           </tr>
         `;
       });
@@ -88,15 +106,27 @@ router.get("/all", (request, response) => {
             </style>
           </head>
           <body>
-          <form action="/products/addnew" method="POST">
-          <input type="text" name="productName" placeholder="Название продукта"/>
-          <input type="text" name="productPrice" placeholder="Цена продукта"/>
-          <input type="text" name="productQuantity" placeholder="Количество продукта"/>  
-          <input type="text" name="productSupplier" placeholder="Поставщик продукта"/>
-          <input type="text" name="productCategory" placeholder="Категория продукта"/>
-          <input type="text" name="productImage" placeholder="Изображение продукта"/>
-          <button type="submit">Добавить продукт</button>
+
+        
+            <a href="/">В главное меню</a>
+     
+
+          <form action="/products/searchProducts" method="GET">
+          <input type="text" name="query" placeholder="Поиск по названию продукта">
+          <button type="submit">Найти</button>
         </form>
+      
+  
+            <form action="/products/addnew" method="POST">
+              <input type="text" name="productName" placeholder="Название продукта"/>
+              <input type="text" name="productPrice" placeholder="Цена продукта"/>
+              <input type="text" name="productQuantity" placeholder="Количество продукта"/>  
+              <input type="text" name="productSupplier" placeholder="Поставщик продукта"/>
+              <input type="text" name="productCategory" placeholder="Категория продукта"/>
+              <input type="text" name="productImage" placeholder="Изображение продукта"/>
+              <button type="submit">Добавить продукт</button>
+            </form>
+
             <table>
               <thead>
                 <tr>
@@ -111,7 +141,6 @@ router.get("/all", (request, response) => {
                 ${tableRows}
               </tbody>
             </table>
-           
           </body>
         </html>
       `;
@@ -119,7 +148,6 @@ router.get("/all", (request, response) => {
       response.status(200).send(html);
   });
 });
-
 router.post("/deletes/:id", (request, response) => {
   const productId = request.params.id;
 
@@ -127,9 +155,125 @@ router.post("/deletes/:id", (request, response) => {
 
   database.query(query, [productId], (error, result) => {
     if (error) throw error;
-    response.send("Product deleted successfully.");
+    response.send(`
+    <h1>Product deleted successfully.</h1>
+    <ul>
+        <li><a href="/orders/allrouter">Назад</a></li>
+    </ul>
+`);
+
   });
 });
+
+
+router.get('/searchProducts', (req, res) => {
+  const query = req.query.query;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+  const searchQuery = `%${query}%`;
+
+  const sql = `SELECT * FROM product WHERE product_name LIKE ? LIMIT ? OFFSET ?`;
+
+  database.query(sql, [searchQuery, pageSize, offset], (error, result) => {
+    if (error) throw error;
+
+    const tableRows = result.map(product => {
+      return `
+        <tr>
+          <td>${product.id}</td>
+          <td>${product.product_name}</td>
+          <td>${product.quantity}</td>
+          <td>${product.category}</td>
+          <td>${product.price}</td>
+          <td>
+            <form method="POST" action="/products/deletes/${product.id}" >
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+          <td>
+            <form method="POST" action="/products/update/${product.id}" >
+              <input type="text" name="productName" placeholder="Product Name" value="${product.product_name}"/>
+              <input type="text" name="productPrice" placeholder="Product Price" value="${product.price}"/>
+              <input type="text" name="productQuantity" placeholder="Product Quantity" value="${product.quantity}"/>
+              <input type="text" name="productSupplier" placeholder="Product Supplier" value="${product.supplier}"/>
+              <input type="text" name="productCategory" placeholder="Product Category" value="${product.category}"/>
+              <input type="text" name="productImage" placeholder="Product Image" value="${product.image}"/>
+              <button type="submit">Update</button>
+            </form>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    const html = `
+      <html>
+        <head>
+          <title>Поиск по запросу '${query}'</title>
+          <style>
+            table {
+              border-collapse: collapse;
+              width: 100%;
+            }
+            th, td {
+              padding: 8px;
+              text-align: left;
+              border-bottom: 1px solid #ddd;
+            }
+            th {
+              background-color: #f2f2f2;
+            }
+          </style>
+        </head>
+        <body>
+
+        
+        <a href="/"> В главное меню</a></li>
+     
+
+        <form action="/products/searchProducts" method="GET">
+        <input type="text" name="query" placeholder="Поиск по названию продукта">
+        <button type="submit">Найти</button>
+      </form>
+
+          <form action="/products/addnew" method="POST">
+            <input type="text" name="productName" placeholder="Название продукта"/>
+            <input type="text" name="productPrice" placeholder="Цена продукта"/>
+            <input type="text" name="productQuantity" placeholder="Количество продукта"/>  
+            <input type="text" name="productSupplier" placeholder="Поставщик продукта"/>
+            <input type="text" name="productCategory" placeholder="Категория продукта"/>
+            <input type="text" name="productImage" placeholder="Изображение продукта"/>
+            <button type="submit">Добавить продукт</button>
+          </form>
+
+          <p>Результаты поиска по запросу '${query}':</p>
+          <ul>
+          <li><a href="/products/all">Назад</a></li>
+          </ul>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Количество</th>
+                <th>Категория</th>
+                <th>Цена</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    res.status(200).send(html);
+  });
+});
+
+
+
 
 router.post("/addnew", (request, response) => {
   const productName = request.body.productName;
@@ -148,6 +292,31 @@ router.post("/addnew", (request, response) => {
 });
 
 
+
+router.post("/update/:id", (request, response) => {
+  const productId = request.params.id;
+  const productName = request.body.productName;
+  const productPrice = request.body.productPrice;
+  const productQuantity = request.body.productQuantity;
+  const productSupplier = request.body.productSupplier;
+  const productCategory = request.body.productCategory;
+  const productImage = request.body.productImage;
+
+  const query = "UPDATE bd.product SET product_name = ?, price = ?, quantity=?,supplier=?,category=?,image=? WHERE (id = ?);";
+  const values = [productName, productPrice, productQuantity, productSupplier, productCategory, productImage];
+  
+  database.query(query, [...values, productId], (error, result) => {
+    if (error) throw error;
+    response.send(`
+    <h1>Product UPDATED successfully</h1>
+    <ul>
+        <li><a href="/products/all">Назад</a></li>
+    </ul>
+`);
+  });
+
+
+});
 
 
 // Get products by category

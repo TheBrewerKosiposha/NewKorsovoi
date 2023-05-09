@@ -68,11 +68,18 @@ router.get("/", (request, response) => {
                 <h1>Пользователи:</h1>
                 <ul>
                     ${users.map(user => `
-                    <li>${user.name} (${user.email}) 
-                      <form id="delete-form-${user.id}" action="/users/${user.id}" method="post">
-                          <button type="button" onclick="deleteUser(${user.id})">delete</button>
-                      </form>
-                    </li>`).join('')}                
+                    <li>
+    ${user.name} (${user.email}) 
+    <form method="post" action="/users/deletes/${user.id}" id="delete-form-${user.id}">
+        <button type="submit">delete</button>
+    </form>
+    <form method="post" action="/users/update/${user.id}" id="update-form-${user.id}">
+    <input type="text" name="name" value="${user.name}" required>
+    <input type="email" name="email" value="${user.email}" required>
+    <button type="submit">Update</button>
+</form>
+
+</li>`).join('')}                
                 </ul>
                 <br>
                 <a href="/users?page=${prevPage}&page_size=${page_size}">Предыдущая страница</a>
@@ -81,8 +88,8 @@ router.get("/", (request, response) => {
                 <script>
                 function deleteUser(id) {
                     $.ajax({
-                        url:"/users/:${users.id}",
-                        method: "DELETE",
+                        url:"/users/deletes/${users.id}",
+                        method: "post",
                         success: function(res) {
                             $("#delete-form-" + id).remove(); // удаляем форму из DOM
                             alert(res);
@@ -99,6 +106,23 @@ router.get("/", (request, response) => {
   });
 
 
+  
+//``
+
+
+  router.post("/update/:id", (request, response) => {
+    const id = request.params.id;
+    const { name, email } = request.body;
+    const query = "UPDATE user SET name = ?, email = ? WHERE id = ?";
+    const args = [name, email, id];
+    database.query(query, args, (error, result) => {
+        if(error){
+            throw error;
+        } else{
+            response.redirect("/users");
+        }
+    });
+});
 
 
 // Login
@@ -222,12 +246,13 @@ router.post("/register",uploadImage.single('image'), (request, response) => {
                    const userQuery = "SELECT id, name, email, password, if(isAdmin=1,  'true', 'false') as isAdmin FROM user WHERE id = ?";
                    database.query(userQuery, result.insertId, (err, res) => {
                        if (error) throw error
-                       response.status(200).json({
-                        
-                           "error" : false,
-                           "message" : "Register Done",
-                           "user" : res[0],
-                       })
+                       response.send(`
+                       <h1>Successfully.</h1>
+                       <ul>
+                           <li><a href="/users/">Назад</a></li>
+                       </ul>
+                   `)
+
                    })
                 });
             });
@@ -247,6 +272,22 @@ router.delete("/:id", checkAuth, (request, response) => {
     });
 });
  
+router.post("/deletes/:id", (request, response) => {
+    const productId = request.params.id;
+  
+    const query = "DELETE FROM user WHERE id = ?";
+  
+    database.query(query, [productId], (error, result) => {
+      if (error) throw error;
+      response.send(`
+      <h1>Account is deleted.</h1>
+      <ul>
+          <li><a href="/users/">Назад</a></li>
+      </ul>
+  `)
+    });
+  });
+
 // Update Password
 router.put("/info", checkAuth, (request, response) => {
     const id = request.query.id;

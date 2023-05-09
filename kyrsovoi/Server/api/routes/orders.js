@@ -59,69 +59,88 @@ router.post("/add", (request, response) => {
 });
 
 router.get("/allrouter", (request, response) => {
-    const query = "SELECT * FROM bd.ordering";
-    database.query(query, (error, result) => {
-      if (error) {
-        console.log(error);
-        response.sendStatus(500); // internal server error
-      } else {
-        let results = `
+  const query = "SELECT * FROM bd.ordering";
+  database.query(query, (error, result) => {
+    if (error) {
+      console.log(error);
+      response.sendStatus(500); // internal server error
+    } else {
+      let results = `
+      <form method="GET" action="/">
+      <td>
+        <button type="submit">Назад</button>
+      </td>
+    </form>
         <form method="POST" action="/orders/addOrder">
-  <td><input type="text" name="orderNumber"></td>
-  <td><input type="date" name="orderDate"></td>
-  <td><input type="text" name="status"></td>
-  <td><input type="text" name="nameOnCard"></td>
-  <td><input type="text" name="cardNumber"></td>
-  <td><input type="date" name="expirationDate"></td>
-  <td><input type="number" name="userId"></td>
-  <td><input type="number" name="productId"></td>
-  <td>
-    <button type="submit" name="addOrder">Add Order</button>
-  </td>
-</form>
-          <table>
-            <thead>
-              <tr>
-                <th>Ordering ID</th>
-                <th>Order Number</th>
-                <th>Order Date</th>
-                <th>Status</th>
-                <th>Name on Card</th>
-                <th>Card Number</th>
-                <th>Expiration Date</th>
-                <th>User ID</th>
-                <th>Product ID</th>
-                <th>Delete</th> // добавляем новый столбец для кнопок
-              </tr>
-            </thead>
-            <tbody>`;
-        result.forEach((order) => {
-          results += `
+          <td><input type="text" name="orderNumber"></td>
+          <td><input type="date" name="orderDate"></td>
+          <td><input type="text" name="status"></td>
+          <td><input type="text" name="nameOnCard"></td>
+          <td><input type="text" name="cardNumber"></td>
+          <td><input type="date" name="expirationDate"></td>
+          <td><input type="number" name="userId"></td>
+          <td><input type="number" name="productId"></td>
+          <td>
+            <button type="submit" name="addOrder">Add Order</button>
+          </td>
+        </form>
+        <table>
+          <thead>
             <tr>
-              <td>${order.ordering_id}</td>
-              <td>${order.order_number}</td>
-              <td>${order.order_date}</td>
-              <td>${order.status}</td>
-              <td>${order.name_on_card}</td>
-              <td>${order.card_number}</td>
-              <td>${order.expiration_date}</td>
-              <td>${order.user_id}</td>
-              <td>${order.product_id}</td>
-              <td>
-              <form method="POST" action="/orders/deleteOrder" >
-                  <button type="submit" name="orderId" value="${order.ordering_id}">Delete</button> 
-                </form>
-              </td>
-            </tr>`;
-        });
+              <th>Ordering ID</th>
+              <th>Order Number</th>
+              <th>Order Date</th>
+              <th>Status</th>
+              <th>Name on Card</th>
+              <th>Card Number</th>
+              <th>Expiration Date</th>
+              <th>User ID</th>
+              <th>Product ID</th>
+              <th>Delete</th>
+              <th>Change Status</th> // добавили новый столбец
+            </tr>
+          </thead>
+          <tbody>`;
+      result.forEach((order) => {
         results += `
-            </tbody>
-          </table>`;
+          <tr>
+            <td>${order.ordering_id}</td>
+            <td>${order.order_number}</td>
+            <td>${order.order_date}</td>
+            <td>${order.status}</td>
+            <td>${order.name_on_card}</td>
+            <td>${order.card_number}</td>
+            <td>${order.expiration_date}</td>
+            <td>${order.user_id}</td>
+            <td>${order.product_id}</td>
+            <td>
+              <form method="POST" action="/orders/deleteOrder">
+                <button type="submit" name="orderId" value="${order.ordering_id}">Delete</button> 
+              </form>
+            </td>
+            <td>
+              <form method="POST" action="/orders/changeStatus">
+                <input type="hidden" name="orderId" value="${order.ordering_id}">
+                <label for="status">status: ${order.status}</label>
+                 <select name="status">
+                  <option value="В пути">В пути</option>
+                  <option value="Прибыл">Прибыл</option>
+                  <option value="Собираем">Собираем</option>
+             </select>
+             <br><br>
+                <button type="submit" name="changeStatus">Save</button>
+              </form>
+            </td>
+          </tr>`;
+      });
+      results += `
+          </tbody>
+        </table>`;
       
-        response.send(results);
-      }
-    });
+      response.send(results);
+    }
   });
+});
   
   router.post("/deleteOrder", bodyParser.urlencoded({ extended: false }), (request, response) => {
     const orderId = request.body.orderId; // fix: should be request.body.orderId instead of request.body.ordering_id
@@ -133,6 +152,25 @@ router.get("/allrouter", (request, response) => {
       } else {
         console.log(`Order with ID ${orderId} deleted`);
         response.redirect("/orders/allrouter"); // перенаправляем на страницу, где отображаются все заказы
+      }
+    });
+  });
+  router.post("/changeStatus", (request, response) => {
+    const orderId = request.body.orderId;
+    const newStatus = request.body.status;
+    const query = `UPDATE bd.ordering SET status = '${newStatus}' WHERE ordering_id = ${orderId}`;
+    
+    database.query(query, (error, result) => {
+      if (error) {
+        console.log(error);
+        response.sendStatus(500); // internal server error
+      } else {
+        response.send(`
+        <h1>Status update.</h1>
+        <ul>
+            <li><a href="/orders/allrouter">Назад</a></li>
+        </ul>
+    `);
       }
     });
   });
