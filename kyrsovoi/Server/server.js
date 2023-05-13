@@ -47,9 +47,10 @@ app.get('/', (req, res) => {
     res.send(`
         <h1>Главная страница</h1>
         <ul>
-            <li><a href="/users">users</a></li>
-            <li><a href="/products/all">products</a></li>
-            <li><a href="/orders/allrouter">orders</a></li>
+            <li><a href="/users">Пользователи</a></li>
+            <li><a href="/products/all">Продукты</a></li>
+            <li><a href="/orders/allrouter">Заказы</a></li>
+            <li><a href="/review/full">Отзывы</a></li>
         </ul>
     `);
 });

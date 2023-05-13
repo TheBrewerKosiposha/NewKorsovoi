@@ -69,7 +69,7 @@ router.get("/", (request, response) => {
                 <ul>
                     ${users.map(user => `
                     <li>
-    ${user.name} (${user.email}) 
+    id = ${user.id}, имя = ${user.name}, email = ${user.email}
     <form method="post" action="/users/deletes/${user.id}" id="delete-form-${user.id}">
         <button type="submit">delete</button>
     </form>

@@ -102,8 +102,9 @@ public class CategoryActivity extends AppCompatActivity implements ProductAdapte
     }
 
     @Override
-    public void onNetworkDisconnected() {
+    public boolean onNetworkDisconnected() {
         showSnackBar();
+        return false;
     }
 
     public void showSnackBar() {
