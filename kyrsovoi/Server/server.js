@@ -10,11 +10,7 @@ app.use('/storage_product', express.static('storage_product'));
 app.use('/storage_poster', express.static('storage_poster'));
 
 
-app.get("/", function(request, response){
-     
-    // отправляем ответ
-    response.send("<h2>Привет Express!</h2>");
-});
+
 
 // Import my file
 const userRouter = require('./api/routes/users')
@@ -47,6 +43,18 @@ app.use('/posters',posterRouter)
 app.use('/address',addressRouter)
 app.use('/orders',orderRouter)
 
+app.get('/', (req, res) => {
+    res.send(`
+        <h1>Главная страница</h1>
+        <ul>
+            <li><a href="/users">Пользователи</a></li>
+            <li><a href="/products/all">Продукты</a></li>
+            <li><a href="/orders/allrouter">Заказы</a></li>
+            <li><a href="/review/full">Отзывы</a></li>
+        </ul>
+    `);
+});
+
 // Make my server work on port 3000 and listen when user use it
 app.listen(port, () => console.log("Server Started"))
-console.log("http://localhost:3000");
+console.log("http://localhost:"+port);

@@ -127,6 +127,7 @@ public class ProductActivity extends AppCompatActivity implements View.OnClickLi
 
         mNetworkReceiver = new NetworkChangeReceiver();
         mNetworkReceiver.setOnNetworkListener(this);
+
     }
 
     private void setUpViews() {
@@ -423,8 +424,9 @@ public class ProductActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public void onNetworkDisconnected() {
+    public boolean onNetworkDisconnected() {
         showSnackBar();
+        return false;
     }
 
     @Override

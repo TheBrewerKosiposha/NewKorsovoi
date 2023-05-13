@@ -2,18 +2,12 @@ package com.marwaeltayeb.souq.net;
 
 import static android.app.PendingIntent.getActivity;
 
-import static java.security.AccessController.getContext;
-
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.paging.PageKeyedDataSource;
 
-import com.marwaeltayeb.souq.localdatabase.SQLiteDBHelper;
-import com.marwaeltayeb.souq.localdatabase.dbHelper;
 import com.marwaeltayeb.souq.model.Product;
 import com.marwaeltayeb.souq.model.ProductApiResponse;
 

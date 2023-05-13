@@ -3,7 +3,6 @@ package com.marwaeltayeb.souq.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-
 public class Order implements Serializable {
 
     @SerializedName("id")
@@ -24,6 +23,15 @@ public class Order implements Serializable {
     private String shippingAddress;
     @SerializedName("phone")
     private String shippingPhone;
+
+    public Order(int productId, String date, String status) {
+
+        this.orderNumber = String.valueOf(productId);
+        this.orderDate = date;
+        this.orderDateStatus = status;
+
+    }
+
 
     public int getProductId() {
         return productId;
@@ -60,4 +68,8 @@ public class Order implements Serializable {
     public String getShippingPhone() {
         return shippingPhone;
     }
+
+    //Класс Order представляет объект типа "заказ" со следующими полями: productId, productName, orderNumber, orderDate, productPrice, orderDateStatus, userName, shippingAddress и shippingPhone.
+    // Аннотация @SerializedName указывает на соответствие полей в классе Order с ключами в JSON-ответе.
+    // Методы get...() возвращают значения соответствующих полей. Эти методы используются для получения данных о заказе из объекта Order, полученного после десериализации JSON-ответа.
 }
