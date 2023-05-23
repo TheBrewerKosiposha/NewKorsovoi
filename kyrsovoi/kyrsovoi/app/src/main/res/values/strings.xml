@@ -12,7 +12,7 @@
     <string name="sign_out">Выход</string>
     <string name="forget_password">Забыли пароль</string>
     <string name="sign_in">Регистрироваться</string>
-    <string name="new_customer_create_your_account">Новый покупатель?<font color='#008CFF'>Создайте свою учетную запись</font></string>
+    <string name="new_customer_create_your_account">Новый покупатель?<font color='#008CFF'> Создайте свою учетную запись</font></string>
     <string name="_2020_souq">2023 Mastak by freak Kosiposha. All Rights Reserved</string>
     <string name="eight_characters">Длина паролей должна составлять не менее 8 символов</string>
     <string name="create_your_account">Создайте свою учетную запись</string>
@@ -27,13 +27,13 @@
     <!--Server Information-->
     <string name="see_all">Увидеть все</string>
     <string name="mobile">Резка металла</string>
-    <string name="laptop">Древообрабатывающий</string>
+    <string name="laptop">По дереву</string>
     <string name="product_image">Изображение продукта</string>
     <string name="samsung_galaxy_a70">Что</string>
     <string name="share_product">Поделиться продуктом</string>
-    <string name="add_to_cart">Добавить в корзину</string>
+    <string name="add_to_cart">Добавить</string>
     <string name="add_to_favourite">Добавить в избранное</string>
-    <string name="_5399_egp">5399 EGP</string>
+    <string name="_5399_egp">5399 PLN</string>
     <string name="name_required">Требуемое имя</string>
     <string name="all_laptops">Все сетевые электроинструменты</string>
     <string name="all_mobiles">Электроинструмент, работающий на батарейках</string>
@@ -102,7 +102,7 @@
     <string name="write_review">Написать отзыв</string>
     <string name="dateOfReview">7 Апреля 2023</string>
     <string name="write_your_feedback_here">Напишите Свой отзыв здесь</string>
-    <string name="submit">Под</string>
+    <string name="submit">Подтвердить</string>
     <string name="dummyRate">3.0/5</string>
     <string name="highestNumber">/5</string>
     <string name="change_password">Поменять пароль</string>
@@ -158,7 +158,7 @@
     <string name="order_date">23-11-2020</string>
     <string name="track_order">Отследить заказ</string>
     <string name="status">Статус</string>
-    <string name="add_a_credit_or_debit_card">Добавить кредитную или дебетовую карту</string>
+    <string name="add_a_credit_or_debit_card">Добавить кредитную карту</string>
     <string name="name_on_card">Имя на карте</string>
     <string name="card_number">Номер карты</string>
     <string name="add_your_card">Добавьте свою карту</string>
