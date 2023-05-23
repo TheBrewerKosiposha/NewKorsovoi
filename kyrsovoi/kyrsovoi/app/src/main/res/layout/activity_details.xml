@@ -48,7 +48,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/dimen20sp"
                 android:textStyle="bold"
-                tools:text="2,399.00 EGP" />
+                tools:text="2,399.00 PLN" />
 
             <View
                 android:id="@+id/view2"

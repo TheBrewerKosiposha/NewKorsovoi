@@ -92,13 +92,13 @@
 
                 <Button
                     android:id="@+id/addToCart"
-                    android:layout_width="115dp"
-                    android:layout_height="70dp"
+                    android:layout_width="109dp"
+                    android:layout_height="175dp"
                     android:layout_marginStart="@dimen/dimen5dp"
                     android:background="@color/green"
+                    android:gravity="center"
                     android:text="@string/add_to_cart"
                     android:textColor="@color/white"
-                    android:gravity="center"
                     android:textSize="13sp" />
 
                 <ImageView

@@ -24,9 +24,21 @@ public class Order implements Serializable {
     @SerializedName("phone")
     private String shippingPhone;
 
-    public Order(int productId, String date, String status) {
+
+    //                    COLUMN_productName + " TEXT, " +
+    //                    COLUMN_userName + " TEXT, " +
+
+    //                    COLUMN_productPrice + " DOUBLE, "+
+    //                    COLUMN_shippingAddress + " TEXT, " +
+
+
+    public Order(int productId, String date,String Name,String name, int productPrice,String shippingAddressPrice,String status) {
 
         this.orderNumber = String.valueOf(productId);
+        this.productName = Name;
+        this.userName = name;
+        this.productPrice = productPrice;
+        this.shippingAddress = shippingAddressPrice;
         this.orderDate = date;
         this.orderDateStatus = status;
 

@@ -31,13 +31,13 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.room:room-common:2.4.2'
+    implementation 'androidx.room:room-common:2.5.1'
     implementation 'com.google.ar.sceneform:filament-android:1.17.1'
-    implementation 'androidx.room:room-runtime:2.4.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    annotationProcessor 'androidx.room:room-compiler:2.4.2'
+    implementation 'androidx.room:room-runtime:2.5.1'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    annotationProcessor 'androidx.room:room-compiler:2.5.1'
 
     def support_version = "1.3.1"
     def materialVersion = '1.4.0'
@@ -75,7 +75,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$view_model_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel:$view_model_version"
     // ConstraintLayout
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     // Circle ImageView
     implementation "de.hdodenhof:circleimageview:$CircleImgVersion"
 

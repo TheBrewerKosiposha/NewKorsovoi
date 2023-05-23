@@ -23,13 +23,25 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_NAME = "orders";
     private static final String COLUMN_ORDER_ID = "orderId";
+
+    private static final String COLUMN_ORDER_Number = "Number";
+    private static final String COLUMN_productName = "productName";
+    private static final String COLUMN_userName = "userName";
     private static final String COLUMN_ORDER_DATE = "orderDate";
+
+    private static final String COLUMN_productPrice = "productPrice";
     private static final String COLUMN_ORDER_STATUS = "orderStatus";
+    private static final String COLUMN_shippingAddress = "shippingAddress";
 
     private static final String CREATE_TABLE =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     COLUMN_ORDER_ID + " INTEGER, " +
+                    COLUMN_ORDER_Number+"INTEGER, "+
+                    COLUMN_productName + " TEXT, " +
+                    COLUMN_userName + " TEXT, " +
                     COLUMN_ORDER_DATE + " TEXT, " +
+                    COLUMN_productPrice + " DOUBLE, "+
+                    COLUMN_shippingAddress + " TEXT, " +
                     COLUMN_ORDER_STATUS + " TEXT)";
 
     public DBHelper(Context context) {
@@ -60,15 +72,25 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<Order> orders = new ArrayList<>();
         try (SQLiteDatabase db = getReadableDatabase();
              Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null)) {
-            int idColumnIndex = cursor.getColumnIndex(COLUMN_ORDER_ID);
-            int dateColumnIndex = cursor.getColumnIndex(COLUMN_ORDER_DATE);
-            int statusColumnIndex = cursor.getColumnIndex(COLUMN_ORDER_STATUS);
+
+
+            int productIdSIndex = cursor.getColumnIndex(COLUMN_ORDER_ID);
+            String dateIndex = String.valueOf(cursor.getColumnIndex(COLUMN_ORDER_DATE));
+            String statusIndex = String.valueOf(cursor.getColumnIndex(COLUMN_ORDER_STATUS));
+            String NameColumnIndex = String.valueOf(cursor.getColumnIndex(COLUMN_productName));
+            String nameColumnIndex = String.valueOf(cursor.getColumnIndex(COLUMN_userName));
+            int productPriceColumnIndex =cursor.getColumnIndex(COLUMN_productPrice);
+            String shippingAddressPriceColumnIndex = String.valueOf(cursor.getColumnIndex(COLUMN_shippingAddress));
             while (cursor.moveToNext()) {
-                if (idColumnIndex != -1) {
-                    int id = cursor.getInt(idColumnIndex);
-                    String date = cursor.getString(dateColumnIndex);
-                    String status = cursor.getString(statusColumnIndex);
-                    Order order = new Order(id, date, status);
+                if (productIdSIndex != -1) {
+                    int id = cursor.getInt(productIdSIndex);
+                    String date = cursor.getString(Integer.parseInt(dateIndex));
+                    String Name = cursor.getString(Integer.parseInt(NameColumnIndex));
+                    String name = cursor.getString(Integer.parseInt(nameColumnIndex));
+                    int  productPrice = cursor.getInt(productPriceColumnIndex);
+                    String shippingAddressPrice = cursor.getString(Integer.parseInt(shippingAddressPriceColumnIndex));
+                    String status = cursor.getString(Integer.parseInt(statusIndex));
+                    Order order = new Order(id, date, Name,name,productPrice,shippingAddressPrice ,status);
                     orders.add(order);
                 } else {
                     Log.e(TAG, "Column " + COLUMN_ORDER_ID + " not found in table " + TABLE_NAME);
@@ -96,6 +118,12 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(COLUMN_ORDER_ID, order.getProductId());
         values.put(COLUMN_ORDER_DATE, order.getOrderDate());
         values.put(COLUMN_ORDER_STATUS, order.getOrderDateStatus());
+
+        values.put(COLUMN_productName, order.getProductName());
+        values.put(COLUMN_userName, order.getUserName());
+        values.put(COLUMN_productPrice, order.getProductPrice());
+        values.put(COLUMN_shippingAddress, order.getShippingAddress());
+
         db.insert(TABLE_NAME, null, values);
         db.close();
     }
@@ -106,6 +134,11 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(COLUMN_ORDER_ID, order.getProductId());
         values.put(COLUMN_ORDER_DATE, order.getOrderDate());
         values.put(COLUMN_ORDER_STATUS, order.getOrderDateStatus());
+
+        values.put(COLUMN_productName, order.getProductName());
+        values.put(COLUMN_userName, order.getUserName());
+        values.put(COLUMN_productPrice, order.getProductPrice());
+        values.put(COLUMN_shippingAddress, order.getShippingAddress());
         db.update(TABLE_NAME, values, COLUMN_ORDER_ID + " = ?", new String[] { String.valueOf(order.getProductId()) });
         db.close();
     }
@@ -139,8 +172,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String[] columns = {
                 COLUMN_ORDER_ID,
+                COLUMN_productName,
+                COLUMN_userName,
                 COLUMN_ORDER_DATE,
                 COLUMN_ORDER_STATUS,
+                COLUMN_productPrice,
+                COLUMN_shippingAddress
         };
 
         String selection = COLUMN_ORDER_ID + " = ?";
@@ -155,13 +192,20 @@ public class DBHelper extends SQLiteOpenHelper {
                 int productIdSIndex = cursor.getColumnIndex(COLUMN_ORDER_ID);
                 String dateIndex = String.valueOf(cursor.getColumnIndex(COLUMN_ORDER_DATE));
                 String statusIndex = String.valueOf(cursor.getColumnIndex(COLUMN_ORDER_STATUS));
-
+                String NameColumnIndex = String.valueOf(cursor.getColumnIndex(COLUMN_productName));
+                String nameColumnIndex = String.valueOf(cursor.getColumnIndex(COLUMN_userName));
+                int productPriceColumnIndex = cursor.getColumnIndex(COLUMN_productPrice);
+                String shippingAddressPriceColumnIndex = String.valueOf(cursor.getColumnIndex(COLUMN_shippingAddress));
                 if(productIdSIndex >= 0 && dateIndex.length() >= 0 && statusIndex.length() >= 0) {
-                    int productIdS = cursor.getInt(productIdSIndex);
+                    int id = cursor.getInt(productIdSIndex);
                     String date = cursor.getString(Integer.parseInt(dateIndex));
+                    String Name = cursor.getString(Integer.parseInt(NameColumnIndex));
+                    String name = cursor.getString(Integer.parseInt(nameColumnIndex));
+                    int  productPrice = cursor.getInt(productPriceColumnIndex);
+                    String shippingAddressPrice = cursor.getString(Integer.parseInt(shippingAddressPriceColumnIndex));
                     String status = cursor.getString(Integer.parseInt(statusIndex));
 
-                    order = new Order(productIdS, date, status);
+                    order = new Order(id, date, Name,name,productPrice,shippingAddressPrice ,status);;
                 }
                 cursor.close();
 
